@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "clear-cache": "node clear-cache.js",
+    "dev-clean": "npm run clear-cache && npm run dev",
+    "restart": "node restart-dev.js"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

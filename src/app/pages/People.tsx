@@ -17,7 +17,7 @@ const MENTORS = [
     title: "AI Systems Architect",
     bio: "10+ years building production AI systems across fintech, logistics, and retail. Led 20+ enterprise deployments in APAC. Specialist in agentic AI and autonomous system design.",
     tags: ["AI Systems", "Agentic AI", "LLM Architecture"],
-    color: "#00D4FF",
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1649151139875-ae8ea07082e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
   },
   {
@@ -25,7 +25,7 @@ const MENTORS = [
     title: "ERP Implementation Lead",
     bio: "Certified Odoo architect with 8 years of ERP implementation experience across manufacturing, distribution, and healthcare. Has rolled out Odoo in 15+ enterprise environments.",
     tags: ["Odoo", "ERPNext", "Business Architecture"],
-    color: "#7B2FFF",
+    color: "#8B5CF6",
     img: "https://images.unsplash.com/photo-1731419223715-aec6664f9011?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
   },
   {
@@ -33,7 +33,7 @@ const MENTORS = [
     title: "Automation & Integration Engineer",
     bio: "Specialist in RPA, API integration, and no-code/low-code automation platforms. Built automation workflows processing 5M+ events/day. Former tech lead at a leading Vietnamese bank.",
     tags: ["Automation", "RPA", "API Integration"],
-    color: "#00D4FF",
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1625850902501-cc6baef3e3b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
   },
   {
@@ -41,7 +41,7 @@ const MENTORS = [
     title: "AI Product Engineer",
     bio: "Product-minded AI engineer who bridges business requirements and technical implementation. Built AI-powered CRM and analytics products used by 50,000+ users across Vietnam and Southeast Asia.",
     tags: ["AI Products", "CRM", "Data Analytics"],
-    color: "#7B2FFF",
+    color: "#8B5CF6",
     img: "https://images.unsplash.com/photo-1767880239595-f4ea13b5c78c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
   },
 ];
@@ -51,28 +51,28 @@ const BUILDERS = [
     name: "Khoa Nguyen",
     title: "Ninja Builder · AI Agents",
     project: "Built autonomous procurement agent for Odoo ERP",
-    color: "#00D4FF",
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300",
   },
   {
     name: "Phuong Mai",
     title: "Ninja Builder · ERP",
     project: "Deployed ERPNext for 3-company group",
-    color: "#7B2FFF",
+    color: "#8B5CF6",
     img: "https://images.unsplash.com/photo-1770170389700-eb0f9b910ed8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300",
   },
   {
     name: "Long Bui",
     title: "Ninja Builder · Automation",
     project: "Automated invoice workflow saving 200 hrs/month",
-    color: "#00D4FF",
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1761195696590-3490ea770aa1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300",
   },
 ];
 
 export function People() {
   return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
+    <div className="aurora-bg min-h-screen">
       {/* Hero */}
       <section
         className="pt-32 pb-20 relative overflow-hidden"
@@ -94,7 +94,7 @@ export function People() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
+              style={{ color: "#CA8A04" }}
             >
               People & Builders
             </motion.p>
@@ -108,7 +108,7 @@ export function People() {
               <span
                 style={{
                   display: "block",
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(90deg, #CA8A04, #8B5CF6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -141,7 +141,7 @@ export function People() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-3"
-              style={{ color: "#00D4FF" }}
+              style={{ color: "#CA8A04" }}
             >
               Core Team
             </motion.p>
@@ -232,7 +232,7 @@ export function People() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-3"
-              style={{ color: "#7B2FFF" }}
+              style={{ color: "#8B5CF6" }}
             >
               The Builders
             </motion.p>
@@ -335,7 +335,7 @@ export function People() {
                 to="/lab"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
                 style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(135deg, #CA8A04, #8B5CF6)",
                   boxShadow: "0 0 30px rgba(0,212,255,0.15)",
                 }}
               >

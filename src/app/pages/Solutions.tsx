@@ -12,138 +12,185 @@ import {
   Globe,
   Zap,
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
+    transition: { duration: 0.6, delay: i * 0.1 },
   }),
 };
 
-const SOLUTIONS = [
+const SOLUTIONS_DATA = (t: (key: string) => string) => [
   {
     icon: Users,
-    label: "CRM",
-    tagline: "Customer Intelligence at Scale",
-    color: "#00D4FF",
-    desc: "We design and deploy intelligent CRM systems that unify customer data, automate sales workflows, and power AI-driven relationship management. Built for enterprise scale with seamless integration.",
+    label: t("solutions.crm.label"),
+    tagline: t("solutions.crm.tagline"),
+    color: "#CA8A04",
+    desc: t("solutions.crm.desc"),
     features: [
-      "AI lead scoring & prioritization",
-      "Automated follow-up workflows",
-      "360° customer data profiles",
-      "Sales pipeline analytics",
-      "Multi-channel communication hub",
+      t("solutions.crm.feature1"),
+      t("solutions.crm.feature2"),
+      t("solutions.crm.feature3"),
+      t("solutions.crm.feature4"),
+      t("solutions.crm.feature5"),
     ],
-    tech: ["Salesforce", "HubSpot", "Custom CRM", "AI Layer"],
+    tech: [
+      t("solutions.crm.tech1"),
+      t("solutions.crm.tech2"),
+      t("solutions.crm.tech3"),
+      t("solutions.crm.tech4"),
+    ],
   },
   {
     icon: Database,
-    label: "ERP (Odoo / ERPNext)",
-    tagline: "Enterprise Resource Planning Done Right",
-    color: "#7B2FFF",
-    desc: "Full ERP rollouts using Odoo and ERPNext — tailored to your industry, integrated with existing systems, and enhanced with AI modules for forecasting, procurement automation, and real-time reporting.",
+    label: t("solutions.erp.label"),
+    tagline: t("solutions.erp.tagline"),
+    color: "#8B5CF6",
+    desc: t("solutions.erp.desc"),
     features: [
-      "Odoo 17 & ERPNext deployment",
-      "Custom module development",
-      "AI demand forecasting",
-      "Multi-company configuration",
-      "Real-time inventory control",
+      t("solutions.erp.feature1"),
+      t("solutions.erp.feature2"),
+      t("solutions.erp.feature3"),
+      t("solutions.erp.feature4"),
+      t("solutions.erp.feature5"),
     ],
-    tech: ["Odoo", "ERPNext", "Python", "PostgreSQL"],
+    tech: [
+      t("solutions.erp.tech1"),
+      t("solutions.erp.tech2"),
+      t("solutions.erp.tech3"),
+      t("solutions.erp.tech4"),
+    ],
   },
   {
     icon: BarChart3,
-    label: "DMS",
-    tagline: "Distribution Management Intelligence",
-    color: "#00D4FF",
-    desc: "Dealer and distribution management systems that give you full visibility across your supply chain. Track orders, manage distributors, and optimize logistics with AI-powered routing.",
+    label: t("solutions.dms.label"),
+    tagline: t("solutions.dms.tagline"),
+    color: "#CA8A04",
+    desc: t("solutions.dms.desc"),
     features: [
-      "Dealer performance tracking",
-      "Territory management",
-      "Order & returns management",
-      "Real-time stock visibility",
-      "Incentive & commission engine",
+      t("solutions.dms.feature1"),
+      t("solutions.dms.feature2"),
+      t("solutions.dms.feature3"),
+      t("solutions.dms.feature4"),
+      t("solutions.dms.feature5"),
     ],
-    tech: ["Custom Stack", "React", "Node.js", "AI Analytics"],
+    tech: [
+      t("solutions.dms.tech1"),
+      t("solutions.dms.tech2"),
+      t("solutions.dms.tech3"),
+      t("solutions.dms.tech4"),
+    ],
   },
   {
     icon: ShoppingCart,
-    label: "POS Systems",
-    tagline: "Smart Point-of-Sale Infrastructure",
-    color: "#7B2FFF",
-    desc: "Modern POS solutions deeply integrated with inventory, CRM, and accounting. Supports offline mode, multi-outlet management, and real-time dashboard monitoring.",
+    label: t("solutions.pos.label"),
+    tagline: t("solutions.pos.tagline"),
+    color: "#8B5CF6",
+    desc: t("solutions.pos.desc"),
     features: [
-      "Multi-outlet POS management",
-      "Offline-capable architecture",
-      "Inventory sync & alerts",
-      "Loyalty & promotions engine",
-      "End-of-day reporting automation",
+      t("solutions.pos.feature1"),
+      t("solutions.pos.feature2"),
+      t("solutions.pos.feature3"),
+      t("solutions.pos.feature4"),
+      t("solutions.pos.feature5"),
     ],
-    tech: ["Odoo POS", "Custom POS", "Mobile", "Cloud Sync"],
+    tech: [
+      t("solutions.pos.tech1"),
+      t("solutions.pos.tech2"),
+      t("solutions.pos.tech3"),
+      t("solutions.pos.tech4"),
+    ],
   },
   {
     icon: Globe,
-    label: "E-Commerce",
-    tagline: "Commerce Platforms Built for Scale",
-    color: "#00D4FF",
-    desc: "End-to-end ecommerce builds covering storefront, backend, payment integration, and AI-powered personalization. From B2C marketplaces to B2B order portals.",
+    label: t("solutions.ecommerce.label"),
+    tagline: t("solutions.ecommerce.tagline"),
+    color: "#CA8A04",
+    desc: t("solutions.ecommerce.desc"),
     features: [
-      "Custom storefront development",
-      "Payment gateway integration",
-      "AI product recommendations",
-      "Inventory & order management",
-      "Performance optimization",
+      t("solutions.ecommerce.feature1"),
+      t("solutions.ecommerce.feature2"),
+      t("solutions.ecommerce.feature3"),
+      t("solutions.ecommerce.feature4"),
+      t("solutions.ecommerce.feature5"),
     ],
-    tech: ["Next.js", "Shopify", "WooCommerce", "Custom API"],
+    tech: [
+      t("solutions.ecommerce.tech1"),
+      t("solutions.ecommerce.tech2"),
+      t("solutions.ecommerce.tech3"),
+      t("solutions.ecommerce.tech4"),
+    ],
   },
   {
     icon: Layers,
-    label: "CDC",
-    tagline: "Customer Data Center",
-    color: "#7B2FFF",
-    desc: "Unified data infrastructure that centralizes customer information from all touchpoints — enabling real-time segmentation, behavioral analytics, and AI-powered marketing activation.",
+    label: t("solutions.cdc.label"),
+    tagline: t("solutions.cdc.tagline"),
+    color: "#8B5CF6",
+    desc: t("solutions.cdc.desc"),
     features: [
-      "Unified customer profiles",
-      "Cross-channel data ingestion",
-      "Behavioral segmentation",
-      "Real-time activation APIs",
-      "Privacy & compliance built-in",
+      t("solutions.cdc.feature1"),
+      t("solutions.cdc.feature2"),
+      t("solutions.cdc.feature3"),
+      t("solutions.cdc.feature4"),
+      t("solutions.cdc.feature5"),
     ],
-    tech: ["Kafka", "Snowflake", "dbt", "Python", "AI Layer"],
+    tech: [
+      t("solutions.cdc.tech1"),
+      t("solutions.cdc.tech2"),
+      t("solutions.cdc.tech3"),
+      t("solutions.cdc.tech4"),
+      t("solutions.cdc.tech5"),
+    ],
   },
   {
     icon: Bot,
-    label: "AI Agents",
-    tagline: "Autonomous Intelligence in Action",
-    color: "#00D4FF",
-    desc: "We build and deploy autonomous AI agents that handle complex multi-step tasks — from invoice processing and customer support to strategic data analysis and system orchestration.",
+    label: t("solutions.aiAgents.label"),
+    tagline: t("solutions.aiAgents.tagline"),
+    color: "#CA8A04",
+    desc: t("solutions.aiAgents.desc"),
     features: [
-      "Multi-agent architecture design",
-      "Task automation & orchestration",
-      "LLM-powered decision engines",
-      "API & system integrations",
-      "Monitoring & oversight dashboards",
+      t("solutions.aiAgents.feature1"),
+      t("solutions.aiAgents.feature2"),
+      t("solutions.aiAgents.feature3"),
+      t("solutions.aiAgents.feature4"),
+      t("solutions.aiAgents.feature5"),
     ],
-    tech: ["LangChain", "OpenAI", "Anthropic", "Custom LLM"],
+    tech: [
+      t("solutions.aiAgents.tech1"),
+      t("solutions.aiAgents.tech2"),
+      t("solutions.aiAgents.tech3"),
+      t("solutions.aiAgents.tech4"),
+    ],
   },
 ];
 
 export function Solutions() {
+  const { t } = useLanguage();
+  const solutions = SOLUTIONS_DATA(t);
+
   return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
+    <div className="aurora-bg" style={{ minHeight: "100vh" }}>
       {/* Hero */}
-      <section
-        className="pt-32 pb-20 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #050814 0%, #0a0f28 60%, #050814 100%)",
-        }}
-      >
+      <section className="pt-32 pb-20 relative overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src="/pic_company/team_dev.jpg" 
+            alt="Team Development"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(135deg, rgba(10,14,39,0.95) 0%, rgba(10,14,39,0.88) 50%, rgba(10,14,39,0.92) 100%)"
+          }}></div>
+        </div>
+        
         <div
           className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(202,138,4,0.12) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
@@ -157,34 +204,35 @@ export function Solutions() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
+              style={{ color: "#CA8A04" }}
             >
-              Solutions
+              {t("solutions.hero.subtitle")}
             </motion.p>
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-5xl lg:text-6xl text-white mb-6"
-              style={{ fontWeight: 700, lineHeight: 1.1 }}
+              className="text-5xl lg:text-6xl mb-6"
+              style={{ fontWeight: 700, lineHeight: 1.1, color: "#E2E8F0" }}
             >
-              Systems That{" "}
+              {t("solutions.hero.title")}{" "}
               <span
                 style={{
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(90deg, #CA8A04, #FCD34D)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                 }}
               >
-                Drive Results
+                {t("solutions.hero.titleHighlight")}
               </span>
             </motion.h1>
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-gray-400 text-xl leading-relaxed"
+              className="text-xl leading-relaxed"
+              style={{ color: "#94A3B8" }}
             >
-              We don't sell software licenses. We implement, customize, and deploy complete business systems — then make them intelligent with AI.
+              {t("solutions.hero.description")}
             </motion.p>
           </motion.div>
         </div>
@@ -194,7 +242,7 @@ export function Solutions() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-10">
-            {SOLUTIONS.map(({ icon: Icon, label, tagline, color, desc, features, tech }, i) => (
+            {solutions.map(({ icon: Icon, label, tagline, color, desc, features, tech }, i) => (
               <motion.div
                 key={label}
                 initial="hidden"
@@ -202,10 +250,9 @@ export function Solutions() {
                 viewport={{ once: true, margin: "-60px" }}
                 variants={fadeUp}
                 custom={0}
-                className="p-8 rounded-2xl transition-all duration-300"
+                className="p-8 rounded-2xl transition-all duration-300 glass-card-premium shadow-premium hover-lift"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  border: "1px solid rgba(255,255,255,0.1)",
                   backdropFilter: "blur(10px)",
                 }}
               >
@@ -214,16 +261,16 @@ export function Solutions() {
                     <div className="flex items-center gap-3 mb-4">
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ background: `${color}15`, flexShrink: 0 }}
+                        style={{ background: `${color}20`, flexShrink: 0 }}
                       >
                         <Icon size={24} style={{ color }} />
                       </div>
                       <div>
-                        <h2 className="text-white font-bold text-xl">{label}</h2>
+                        <h2 style={{ color: "#E2E8F0" }} className="font-bold text-xl">{label}</h2>
                         <p className="text-sm" style={{ color }}>{tagline}</p>
                       </div>
                     </div>
-                    <p className="text-gray-400 leading-relaxed mb-6">{desc}</p>
+                    <p style={{ color: "#94A3B8" }} className="leading-relaxed mb-6">{desc}</p>
                     <div className="flex flex-wrap gap-2 mb-6">
                       {tech.map((t) => (
                         <span
@@ -240,15 +287,17 @@ export function Solutions() {
                       ))}
                     </div>
                     <Link
-                      to="/contact"
+                      to="/about"
                       className="inline-flex items-center gap-2 text-sm font-medium transition-all hover:gap-3"
                       style={{ color }}
                     >
-                      Discuss this solution <ArrowRight size={16} />
+                      {t("solutions.common.discussSolution")} <ArrowRight size={16} />
                     </Link>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">Key Capabilities</p>
+                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">
+                      {t("solutions.common.keyCapabilities")}
+                    </p>
                     <div className="flex flex-col gap-3">
                       {features.map((f) => (
                         <div key={f} className="flex items-start gap-3">
@@ -281,27 +330,29 @@ export function Solutions() {
             <motion.h2
               variants={fadeUp}
               custom={0}
-              className="text-3xl lg:text-4xl text-white font-bold mb-4"
+              className="text-3xl lg:text-4xl font-bold mb-4"
+              style={{ color: "#E2E8F0" }}
             >
-              Not sure which system you need?
+              {t("solutions.cta.title")}
             </motion.h2>
             <motion.p
               variants={fadeUp}
               custom={1}
-              className="text-gray-400 mb-8"
+              className="mb-8"
+              style={{ color: "#94A3B8" }}
             >
-              We'll map your business processes and recommend the right architecture.
+              {t("solutions.cta.description")}
             </motion.p>
             <motion.div variants={fadeUp} custom={2}>
               <Link
-                to="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
+                to="/about"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-glow-gold animate-pulse-glow"
                 style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
-                  boxShadow: "0 0 30px rgba(0,212,255,0.15)",
+                  background: "linear-gradient(135deg, #CA8A04, #FCD34D)",
+                  color: "#0A0E27",
                 }}
               >
-                Get a Free Consultation <Zap size={16} />
+                {t("solutions.cta.button")} <Zap size={16} />
               </Link>
             </motion.div>
           </motion.div>

@@ -48,7 +48,7 @@ export function Contact() {
   };
 
   return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
+    <div className="aurora-bg min-h-screen">
       {/* Hero */}
       <section
         className="pt-32 pb-20 relative overflow-hidden"
@@ -69,7 +69,7 @@ export function Contact() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
+              style={{ color: "#CA8A04" }}
             >
               Contact
             </motion.p>
@@ -83,7 +83,7 @@ export function Contact() {
               <span
                 style={{
                   display: "block",
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(90deg, #CA8A04, #8B5CF6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -128,7 +128,7 @@ export function Contact() {
                 }}
                 onClick={() => setForm((p) => ({ ...p, type: label }))}
               >
-                <Icon size={24} className="mx-auto mb-2" style={{ color: "#00D4FF" }} />
+                <Icon size={24} className="mx-auto mb-2" style={{ color: "#CA8A04" }} />
                 <p className="text-white text-sm font-medium">{label}</p>
                 <p className="text-gray-600 text-xs mt-1">{desc}</p>
               </motion.div>
@@ -149,7 +149,7 @@ export function Contact() {
               className="lg:col-span-1"
             >
               <motion.div variants={fadeUp} custom={0} className="mb-10">
-                <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#7B2FFF" }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#8B5CF6" }}>
                   Reach Us
                 </p>
                 <h2 className="text-2xl text-white font-bold mb-2">Get in Touch</h2>
@@ -160,8 +160,8 @@ export function Contact() {
 
               <div className="flex flex-col gap-6">
                 {[
-                  { icon: Mail, label: "Email", value: "hello@ninja-ai.io" },
-                  { icon: MapPin, label: "Location", value: "Ho Chi Minh City, Vietnam" },
+                  { icon: Mail, label: "Email", value: "hoangthequang.ninjaai.dev@gmail.com" },
+                  { icon: MapPin, label: "Location", value: "Tầng 3 Tòa Trinity, Mễ Trì, Hà Nội" },
                   { icon: MessageSquare, label: "Response Time", value: "Within 24 hours" },
                 ].map(({ icon: Icon, label, value }) => (
                   <motion.div
@@ -176,7 +176,7 @@ export function Contact() {
                       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ background: "rgba(0,212,255,0.1)" }}
                     >
-                      <Icon size={18} style={{ color: "#00D4FF" }} />
+                      <Icon size={18} style={{ color: "#CA8A04" }} />
                     </div>
                     <div>
                       <p className="text-gray-500 text-xs">{label}</p>
@@ -258,7 +258,7 @@ export function Contact() {
                             style={{
                               background: "rgba(255,255,255,0.05)",
                               border: "1px solid rgba(255,255,255,0.1)",
-                              ringColor: "#00D4FF",
+                              ringColor: "#CA8A04",
                             }}
                           />
                         </div>
@@ -334,7 +334,7 @@ export function Contact() {
                       type="submit"
                       className="w-full py-4 rounded-xl text-white font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                       style={{
-                        background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
+                        background: "linear-gradient(135deg, #CA8A04, #8B5CF6)",
                         boxShadow: "0 0 30px rgba(0,212,255,0.15)",
                       }}
                     >

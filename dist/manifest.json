@@ -1,0 +1,21 @@
+{
+  "name": "Ninja AI - Đối tác Triển khai AI Hàng đầu Việt Nam",
+  "short_name": "Ninja AI",
+  "description": "Ninja AI triển khai hệ thống AI thực tế cho doanh nghiệp - CRM, ERP, AI Agents, Automation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0E27",
+  "theme_color": "#CA8A04",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "technology"],
+  "lang": "vi",
+  "scope": "/"
+}

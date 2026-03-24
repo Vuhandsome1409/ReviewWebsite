@@ -6,109 +6,124 @@ import {
   CheckCircle2,
   Zap,
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
+    transition: { duration: 0.6, delay: i * 0.1 },
   }),
 };
 
-const PROJECTS = [
+const PROJECTS_DATA = (t: (key: string) => string) => [
   {
     id: 1,
-    title: "AI-Powered CRM for National Retail Chain",
-    industry: "Retail",
-    tags: ["CRM", "AI Agents", "Automation"],
-    color: "#00D4FF",
+    title: t("projects.project1.title"),
+    industry: t("projects.project1.industry"),
+    tags: [t("projects.project1.tag1"), t("projects.project1.tag2"), t("projects.project1.tag3")],
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1759661966728-4a02e3c6ed91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
-    problem:
-      "A 200-outlet retail chain had no unified CRM. Sales data was fragmented across Excel, WhatsApp, and 3 legacy tools. Follow-up was manual, inconsistent, and slow.",
-    solution:
-      "We deployed a custom CRM integrated with AI lead scoring, automated follow-up via WhatsApp/email, and a real-time sales dashboard. AI agents handle initial contact, qualification, and handoff to human sales reps.",
-    tech: ["CRM", "AI Agents", "Automation", "Analytics"],
+    problemTitle: t("projects.project1.problemTitle"),
+    problem: t("projects.project1.problem"),
+    solutionTitle: t("projects.project1.solutionTitle"),
+    solution: t("projects.project1.solution"),
+    tech: [t("projects.project1.tech1"), t("projects.project1.tech2"), t("projects.project1.tech3"), t("projects.project1.tech4")],
+    resultsTitle: t("projects.project1.resultsTitle"),
     results: [
-      "+280% Lead Conversion Rate",
-      "-40% Manual Sales Work",
-      "3× Revenue Tracking Accuracy",
-      "100% Follow-up Coverage",
+      t("projects.project1.result1"),
+      t("projects.project1.result2"),
+      t("projects.project1.result3"),
+      t("projects.project1.result4"),
     ],
   },
   {
     id: 2,
-    title: "Odoo ERP Rollout for Manufacturing Group",
-    industry: "Manufacturing",
-    tags: ["ERP", "Odoo", "AI Forecasting"],
-    color: "#7B2FFF",
+    title: t("projects.project2.title"),
+    industry: t("projects.project2.industry"),
+    tags: [t("projects.project2.tag1"), t("projects.project2.tag2"), t("projects.project2.tag3")],
+    color: "#8B5CF6",
     img: "https://images.unsplash.com/photo-1761195696590-3490ea770aa1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
-    problem:
-      "A manufacturing group with 5 production facilities had siloed systems. Inventory overstock was causing $200K/month in losses. Procurement was reactive, not data-driven.",
-    solution:
-      "Full Odoo ERP deployment across all facilities with custom modules for production planning, AI demand forecasting, and automated procurement triggers. Real-time dashboards replaced weekly manual reports.",
-    tech: ["ERP", "Odoo", "Python", "AI Forecasting"],
+    problemTitle: t("projects.project2.problemTitle"),
+    problem: t("projects.project2.problem"),
+    solutionTitle: t("projects.project2.solutionTitle"),
+    solution: t("projects.project2.solution"),
+    tech: [t("projects.project2.tech1"), t("projects.project2.tech2"), t("projects.project2.tech3"), t("projects.project2.tech4")],
+    resultsTitle: t("projects.project2.resultsTitle"),
     results: [
-      "+65% Inventory Accuracy",
-      "-30% Overstock (saves $60K/month)",
-      "Real-time Operations Visibility",
-      "Procurement Automation 80%",
+      t("projects.project2.result1"),
+      t("projects.project2.result2"),
+      t("projects.project2.result3"),
+      t("projects.project2.result4"),
     ],
   },
   {
     id: 3,
-    title: "Autonomous AI Finance Assistant",
-    industry: "Financial Services",
-    tags: ["AI Agents", "Automation", "Analytics"],
-    color: "#00D4FF",
+    title: t("projects.project3.title"),
+    industry: t("projects.project3.industry"),
+    tags: [t("projects.project3.tag1"), t("projects.project3.tag2"), t("projects.project3.tag3")],
+    color: "#CA8A04",
     img: "https://images.unsplash.com/photo-1770170389700-eb0f9b910ed8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
-    problem:
-      "A mid-size financial services firm had a 12-person team spending 70% of their time on invoice processing, reconciliation, and monthly report generation. Error rates were 8%.",
-    solution:
-      "Built an autonomous AI agent that ingests invoices (PDF, email, scan), extracts structured data, validates against PO records, flags anomalies, and generates automated financial reports — escalating only edge cases to humans.",
-    tech: ["AI Agents", "LLM", "Automation", "Data Pipeline"],
+    problemTitle: t("projects.project3.problemTitle"),
+    problem: t("projects.project3.problem"),
+    solutionTitle: t("projects.project3.solutionTitle"),
+    solution: t("projects.project3.solution"),
+    tech: [t("projects.project3.tech1"), t("projects.project3.tech2"), t("projects.project3.tech3"), t("projects.project3.tech4")],
+    resultsTitle: t("projects.project3.resultsTitle"),
     results: [
-      "-70% Report Generation Time",
-      "99.2% Invoice Processing Accuracy",
-      "24/7 Autonomous Operations",
-      "$180K Annual Labor Savings",
+      t("projects.project3.result1"),
+      t("projects.project3.result2"),
+      t("projects.project3.result3"),
+      t("projects.project3.result4"),
     ],
   },
   {
     id: 4,
-    title: "Nationwide DMS for FMCG Distributor",
-    industry: "FMCG / Distribution",
-    tags: ["DMS", "ERP", "Mobile"],
-    color: "#7B2FFF",
+    title: t("projects.project4.title"),
+    industry: t("projects.project4.industry"),
+    tags: [t("projects.project4.tag1"), t("projects.project4.tag2"), t("projects.project4.tag3")],
+    color: "#8B5CF6",
     img: "https://images.unsplash.com/photo-1540058404349-2e5fabf32d75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
-    problem:
-      "A national FMCG distributor with 1,200 dealers had no centralized distribution visibility. Route optimization was manual, order tracking was paper-based, and KPIs were measured monthly, not in real time.",
-    solution:
-      "Deployed a custom Distribution Management System (DMS) with mobile app for field reps, real-time order tracking, route optimization engine, and dealer performance analytics dashboard for management.",
-    tech: ["DMS", "Mobile App", "API", "Real-time Analytics"],
+    problemTitle: t("projects.project4.problemTitle"),
+    problem: t("projects.project4.problem"),
+    solutionTitle: t("projects.project4.solutionTitle"),
+    solution: t("projects.project4.solution"),
+    tech: [t("projects.project4.tech1"), t("projects.project4.tech2"), t("projects.project4.tech3"), t("projects.project4.tech4")],
+    resultsTitle: t("projects.project4.resultsTitle"),
     results: [
-      "+45% Delivery Efficiency",
-      "Real-time Dealer Visibility",
-      "-25% Logistics Cost",
-      "100% Digital Order Capture",
+      t("projects.project4.result1"),
+      t("projects.project4.result2"),
+      t("projects.project4.result3"),
+      t("projects.project4.result4"),
     ],
   },
 ];
 
 export function Projects() {
+  const { t } = useLanguage();
+  const projects = PROJECTS_DATA(t);
+
   return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
+    <div className="aurora-bg" style={{ minHeight: "100vh" }}>
       {/* Hero */}
-      <section
-        className="pt-32 pb-20 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #050814 0%, #0a0f28 60%, #050814 100%)",
-        }}
-      >
+      <section className="pt-32 pb-20 relative overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src="/pic_company/working_place.jpg" 
+            alt="Working Place"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(135deg, rgba(10,14,39,0.95) 0%, rgba(10,14,39,0.88) 50%, rgba(10,14,39,0.92) 100%)"
+          }}></div>
+        </div>
+        
         <div
           className="absolute bottom-0 left-0 w-96 h-96 rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(123,47,255,0.08) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
@@ -122,34 +137,35 @@ export function Projects() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#7B2FFF" }}
+              style={{ color: "#8B5CF6" }}
             >
-              Case Studies
+              {t("projects.hero.subtitle")}
             </motion.p>
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-5xl lg:text-6xl text-white mb-6"
-              style={{ fontWeight: 700, lineHeight: 1.1 }}
+              className="text-5xl lg:text-6xl mb-6"
+              style={{ fontWeight: 700, lineHeight: 1.1, color: "#E2E8F0" }}
             >
-              Projects That{" "}
+              {t("projects.hero.title")}{" "}
               <span
                 style={{
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(90deg, #CA8A04, #FCD34D)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                 }}
               >
-                Actually Shipped
+                {t("projects.hero.titleHighlight")}
               </span>
             </motion.h1>
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-gray-400 text-xl leading-relaxed"
+              className="text-xl leading-relaxed"
+              style={{ color: "#94A3B8" }}
             >
-              Every project is a real deployment with measurable outcomes. No mockups. No case study theater. Just systems built, shipped, and running.
+              {t("projects.hero.description")}
             </motion.p>
           </motion.div>
         </div>
@@ -159,7 +175,7 @@ export function Projects() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-16">
-            {PROJECTS.map(({ title, industry, tags, color, img, problem, solution, tech, results }, i) => (
+            {projects.map(({ title, industry, tags, color, img, problemTitle, problem, solutionTitle, solution, tech, resultsTitle, results }, i) => (
               <motion.div
                 key={title}
                 initial="hidden"
@@ -167,10 +183,9 @@ export function Projects() {
                 viewport={{ once: true, margin: "-60px" }}
                 variants={fadeUp}
                 custom={0}
-                className="rounded-2xl overflow-hidden"
+                className="rounded-2xl overflow-hidden glass-card-premium shadow-premium hover-lift"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  border: "1px solid rgba(255,255,255,0.1)",
                 }}
               >
                 {/* Header image */}
@@ -199,16 +214,16 @@ export function Projects() {
                       >
                         {industry}
                       </span>
-                      {tags.map((t) => (
+                      {tags.map((tag) => (
                         <span
-                          key={t}
+                          key={tag}
                           className="text-xs px-3 py-1 rounded-full"
                           style={{
                             background: "rgba(255,255,255,0.08)",
                             color: "#9ca3af",
                           }}
                         >
-                          {t}
+                          {tag}
                         </span>
                       ))}
                     </div>
@@ -225,9 +240,9 @@ export function Projects() {
                         className="text-xs font-semibold uppercase tracking-widest mb-3"
                         style={{ color: "#ef4444" }}
                       >
-                        The Problem
+                        {problemTitle}
                       </p>
-                      <p className="text-gray-400 text-sm leading-relaxed">{problem}</p>
+                      <p style={{ color: "#94A3B8" }} className="text-sm leading-relaxed">{problem}</p>
                     </div>
                     {/* Solution */}
                     <div>
@@ -235,9 +250,9 @@ export function Projects() {
                         className="text-xs font-semibold uppercase tracking-widest mb-3"
                         style={{ color }}
                       >
-                        Our Solution
+                        {solutionTitle}
                       </p>
-                      <p className="text-gray-400 text-sm leading-relaxed">{solution}</p>
+                      <p style={{ color: "#94A3B8" }} className="text-sm leading-relaxed">{solution}</p>
                       <div className="flex flex-wrap gap-2 mt-4">
                         {tech.map((t) => (
                           <span
@@ -260,7 +275,7 @@ export function Projects() {
                         className="text-xs font-semibold uppercase tracking-widest mb-3"
                         style={{ color: "#10b981" }}
                       >
-                        Results
+                        {resultsTitle}
                       </p>
                       <div className="flex flex-col gap-2">
                         {results.map((r) => (
@@ -290,27 +305,29 @@ export function Projects() {
             <motion.h2
               variants={fadeUp}
               custom={0}
-              className="text-3xl lg:text-4xl text-white font-bold mb-4"
+              className="text-3xl lg:text-4xl font-bold mb-4"
+              style={{ color: "#E2E8F0" }}
             >
-              Your Business Could Be Next
+              {t("projects.cta.title")}
             </motion.h2>
             <motion.p
               variants={fadeUp}
               custom={1}
-              className="text-gray-400 mb-8"
+              className="mb-8"
+              style={{ color: "#94A3B8" }}
             >
-              Let's understand your challenges and design a system that delivers real outcomes.
+              {t("projects.cta.description")}
             </motion.p>
             <motion.div variants={fadeUp} custom={2}>
               <Link
-                to="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
+                to="/about"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-glow-gold animate-pulse-glow"
                 style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
-                  boxShadow: "0 0 30px rgba(0,212,255,0.15)",
+                  background: "linear-gradient(135deg, #CA8A04, #FCD34D)",
+                  color: "#0A0E27",
                 }}
               >
-                Start a Project <ArrowRight size={16} />
+                {t("projects.cta.button")} <ArrowRight size={16} />
               </Link>
             </motion.div>
           </motion.div>

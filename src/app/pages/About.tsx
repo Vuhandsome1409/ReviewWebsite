@@ -1,403 +1,469 @@
-import { Link } from "react-router";
-import { motion } from "motion/react";
-import {
-  Target,
-  Eye,
-  Heart,
-  ArrowRight,
-  Zap,
-  Globe,
-  Shield,
-  TrendingUp,
-} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect } from "react";
+import { InteractiveBook } from "../components/InteractiveBook";
+import { LiveWorkspaceShowcase } from "../components/LiveWorkspaceShowcase";
+import { ImageWithFallback } from "../components/ImageWithFallback";
+import { Users, Award, Target, Lightbulb } from "lucide-react";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
-  }),
-};
-
-const TIMELINE = [
+// Data for the interactive book
+const journeyChapters = [
   {
-    year: "2021",
-    title: "Founded",
-    desc: "Ninja AI was born out of frustration with legacy software consultancies that talk strategy but never deploy. We started with a focus on pure execution.",
-    color: "#00D4FF",
+    number: "01",
+    year: "2021", 
+    title: "Khởi đầu từ bài toán thật",
+    subtitle: "Từ tư duy xây phần mềm → sang tư duy giải quyết vận hành",
+    description: "Ninja AI không bắt đầu từ việc 'làm thương hiệu AI', mà từ việc giải quyết các bài toán thật trong doanh nghiệp. Khởi điểm của chúng tôi là triển khai, va chạm, sửa lỗi, tối ưu và học từ thực tế.",
+    color: "#3B82F6"
   },
   {
+    number: "02", 
     year: "2022",
-    title: "First 10 ERP Deployments",
-    desc: "Rolled out Odoo and ERPNext for 10 companies across manufacturing and distribution. Learned what real-world implementation looks like.",
-    color: "#7B2FFF",
+    title: "Khi hệ thống bắt đầu có chiều sâu",
+    subtitle: "Từ triển khai đơn điểm → sang tư duy hệ thống tổng thể", 
+    description: "Không chỉ làm hệ thống nữa, mà bắt đầu hiểu cách các lớp dữ liệu, quy trình và vận hành phải nối vào nhau. Mỗi lần triển khai là một lần học sâu hơn về cấu trúc doanh nghiệp.",
+    color: "#8B5CF6"
   },
   {
-    year: "2023",
-    title: "AI Layer Launch",
-    desc: "Started integrating AI into core business systems — CRM scoring, demand forecasting, document automation. AI became inseparable from our deployments.",
-    color: "#00D4FF",
+    number: "03",
+    year: "2023–2024", 
+    title: "Khi AI không còn là lớp phủ",
+    subtitle: "Từ software-enabled → sang AI-enabled",
+    description: "AI không còn được xem là thứ trang trí thêm vào, mà trở thành một lớp năng lực mới trong hệ thống kinh doanh. Chúng tôi bắt đầu đưa AI vào chấm điểm, CRM, báo cáo, tự động hóa dữ liệu và các luồng vận hành thật.",
+    color: "#F59E0B"
   },
   {
-    year: "2024",
-    title: "Ninja AI Lab Opens",
-    desc: "Launched the Ninja AI Lab — an execution environment for builders who want to work on real systems alongside our team.",
-    color: "#7B2FFF",
-  },
-  {
+    number: "04",
     year: "2025",
-    title: "Scale Across SEA",
-    desc: "Expanded beyond Vietnam. Projects running in Singapore, Thailand, and Indonesia. 50+ systems deployed and still operating.",
-    color: "#00D4FF",
+    title: "Xây người, không chỉ xây hệ thống", 
+    subtitle: "Từ delivery team → sang ecosystem of builders",
+    description: "Không chỉ build solution, mà build builders. Ninja AI Lab ra đời để biến kiến thức thành năng lực triển khai thật. Mở lab, hình thành pipeline builder, mentoring, dự án nội bộ.",
+    color: "#10B981"
   },
+  {
+    number: "05",
+    year: "2026+",
+    title: "Viết tiếp chương AI-native enterprise",
+    subtitle: "Từ triển khai giải pháp → sang kiến tạo năng lực tổ chức", 
+    description: "Mục tiêu tiếp theo không chỉ là triển khai dự án, mà xây các doanh nghiệp có thể vận hành và tăng trưởng theo mô hình AI-native. Mở rộng khu vực, platform hóa, scale builder ecosystem.",
+    color: "#EF4444"
+  }
 ];
 
-const VALUES = [
-  {
-    icon: Zap,
-    label: "Execution First",
-    desc: "We build and ship. Strategy without execution is noise. Every engagement ends with deployed systems, not presentations.",
-    color: "#00D4FF",
-  },
-  {
-    icon: Shield,
-    label: "Real Accountability",
-    desc: "We own our deployments end-to-end. If it doesn't work, we fix it. Our reputation is built on outcomes, not deliverables.",
-    color: "#7B2FFF",
-  },
-  {
-    icon: Globe,
-    label: "Systems Thinking",
-    desc: "We design for the long term. Modular, scalable architectures that integrate cleanly and grow with your business.",
-    color: "#00D4FF",
-  },
-  {
-    icon: TrendingUp,
-    label: "Measurable Impact",
-    desc: "Every project has success metrics. We don't close engagements until the numbers move in the right direction.",
-    color: "#7B2FFF",
-  },
+// Company stats
+const companyStats = [
+  { icon: Users, label: "Ninja thực chiến", value: "50+", color: "#3B82F6" },
+  { icon: Award, label: "Dự án triển khai", value: "200+", color: "#10B981" },
+  { icon: Target, label: "Khách hàng tin tưởng", value: "100+", color: "#F59E0B" },
+  { icon: Lightbulb, label: "Giải pháp AI", value: "30+", color: "#8B5CF6" }
+];
+
+// Team images
+const teamImages = [
+  { src: "/pic_company/team_dev.jpg", alt: "Đội ngũ phát triển", caption: "Đội ngũ Ninja đang thực chiến" },
+  { src: "/pic_company/working_place.jpg", alt: "Môi trường làm việc", caption: "Không gian làm việc chuyên nghiệp" },
+  { src: "/pic_company/mentor.jpg", alt: "Mentoring", caption: "Mentoring và chia sẻ kinh nghiệm" },
+  { src: "/pic_company/celebration.jpg", alt: "Celebration", caption: "Những khoảnh khắc đáng nhớ" }
 ];
 
 export function About() {
-  return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
-      {/* Hero */}
-      <section
-        className="pt-32 pb-20 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #050814 0%, #0a0f28 60%, #050814 100%)",
-        }}
-      >
-        <div
-          className="absolute top-0 left-1/3 w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)",
-            filter: "blur(60px)",
-          }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial="hidden" animate="visible" className="max-w-3xl">
-            <motion.p
-              variants={fadeUp}
-              custom={0}
-              className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
-            >
-              About Us
-            </motion.p>
-            <motion.h1
-              variants={fadeUp}
-              custom={1}
-              className="text-5xl lg:text-6xl text-white mb-6"
-              style={{ fontWeight: 700, lineHeight: 1.1 }}
-            >
-              We Build the Systems
-              <span
-                style={{
-                  display: "block",
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Others Only Talk About
-              </span>
-            </motion.h1>
-            <motion.p
-              variants={fadeUp}
-              custom={2}
-              className="text-gray-400 text-xl leading-relaxed"
-            >
-              Ninja AI is an AI implementation company and innovation lab based in Ho Chi Minh City, Vietnam. We exist to close the gap between AI potential and real-world business outcomes.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
+  // Error boundary for this component
+  const [hasError, setHasError] = useState(false);
 
-      {/* Mission / Vision */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="grid lg:grid-cols-3 gap-6"
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('About page error:', error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">Đã xảy ra lỗi</h1>
+          <p className="text-slate-300 mb-6">Vui lòng tải lại trang</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {[
-              {
-                icon: Target,
-                label: "Our Mission",
-                color: "#00D4FF",
-                desc: "To deploy AI-powered systems that transform how businesses operate — making intelligence accessible, practical, and measurable for companies across Southeast Asia.",
-              },
-              {
-                icon: Eye,
-                label: "Our Vision",
-                color: "#7B2FFF",
-                desc: "A future where every mid-market business in Southeast Asia operates with AI-native infrastructure — and where the next generation of builders is forged through real execution.",
-              },
-              {
-                icon: Heart,
-                label: "Our Approach",
-                color: "#00D4FF",
-                desc: "We embed with your team, understand your operations, and deploy systems that actually get used. No bloated projects. No theory. Just systems that work.",
-              },
-            ].map(({ icon: Icon, label, color, desc }, i) => (
+            Tải lại trang
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Hero Section with Background Image */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <ImageWithFallback
+            src="/pic_company/working_place.jpg"
+            alt="Ninja AI Workspace"
+            className="w-full h-full object-cover"
+            fallbackSrc="/pic_company/fes.jpg"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/85 to-slate-900/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        </div>
+
+        {/* Animated particles overlay */}
+        <div className="absolute inset-0 opacity-20">
+          {[...Array(30)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-blue-400 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1, 0],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
+              Về Ninja AI
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-200 mb-4 sm:mb-6 leading-relaxed max-w-4xl mx-auto">
+              Nơi những con người đam mê công nghệ cùng nhau tạo ra những giải pháp AI tuyệt vời
+            </p>
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-8 sm:mb-12 leading-relaxed max-w-3xl mx-auto">
+              Môi trường thân thiện • Phát triển cùng nhau • Thực chiến AI
+            </p>
+          </motion.div>
+
+          {/* Company Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16"
+          >
+            {companyStats.map((stat, index) => (
               <motion.div
-                key={label}
-                variants={fadeUp}
-                custom={i}
-                className="p-8 rounded-2xl"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: `1px solid ${color}20`,
-                }}
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
+                className="relative group"
               >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                  style={{ background: `${color}15` }}
+                <div 
+                  className="p-4 sm:p-6 rounded-2xl backdrop-blur-xl border border-white/20 hover:border-white/30 transition-all duration-300"
+                  style={{
+                    background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}10)`,
+                  }}
                 >
-                  <Icon size={24} style={{ color }} />
+                  <stat.icon 
+                    size={24} 
+                    className="mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300 sm:w-8 sm:h-8"
+                    style={{ color: stat.color }}
+                  />
+                  <div className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: stat.color }}>
+                    {stat.value}
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-300 font-medium">
+                    {stat.label}
+                  </div>
                 </div>
-                <h2 className="text-white font-bold text-xl mb-3">{label}</h2>
-                <p className="text-gray-400 leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-slate-300 text-sm"
+          >
+            Cuộn xuống để khám phá hành trình của chúng tôi
+          </motion.div>
         </div>
       </section>
 
-      {/* Timeline */}
-      <section
-        className="py-20"
-        style={{
-          background: "linear-gradient(180deg, #050814 0%, #08101e 100%)",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Journey Story Book Section */}
+      <section className="relative py-20">
+        <div className="max-w-7xl mx-auto px-4">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            <motion.p
-              variants={fadeUp}
-              custom={0}
-              className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#7B2FFF" }}
-            >
-              Our Story
-            </motion.p>
-            <motion.h2
-              variants={fadeUp}
-              custom={1}
-              className="text-4xl text-white"
-              style={{ fontWeight: 700 }}
-            >
-              How We Got Here
-            </motion.h2>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
+              Hành trình phát triển
+            </h2>
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              Mỗi chương là một bước tiến quan trọng trong việc xây dựng tương lai AI-native
+            </p>
           </motion.div>
 
-          <div className="relative">
-            {/* Timeline line */}
-            <div
-              className="absolute left-4 top-0 bottom-0 w-px hidden sm:block"
-              style={{
-                background: "linear-gradient(to bottom, #00D4FF44, #7B2FFF44, transparent)",
-              }}
-            />
-
-            <div className="flex flex-col gap-8">
-              {TIMELINE.map(({ year, title, desc, color }, i) => (
-                <motion.div
-                  key={year}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-40px" }}
-                  variants={fadeUp}
-                  custom={i * 0.5}
-                  className="sm:pl-12 relative"
-                >
-                  {/* Dot */}
-                  <div
-                    className="absolute left-2 top-4 w-5 h-5 rounded-full border-2 hidden sm:flex items-center justify-center"
-                    style={{
-                      background: "#050814",
-                      borderColor: color,
-                      boxShadow: `0 0 12px ${color}60`,
-                    }}
-                  >
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ background: color }}
-                    />
-                  </div>
-
-                  <div
-                    className="p-6 rounded-2xl"
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
-                    }}
-                  >
-                    <span
-                      className="text-xs font-bold px-3 py-1 rounded-full inline-block mb-3"
-                      style={{
-                        background: `${color}15`,
-                        color,
-                        border: `1px solid ${color}30`,
-                      }}
-                    >
-                      {year}
-                    </span>
-                    <h3 className="text-white font-bold text-lg mb-2">{title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+          {/* Interactive Book Component */}
+          <div className="mb-20">
+            <InteractiveBook chapters={journeyChapters} />
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20" style={{ background: "#050814" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Work Environment Gallery */}
+      <section className="relative py-20 bg-gradient-to-r from-slate-800/50 to-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <motion.p
-              variants={fadeUp}
-              custom={0}
-              className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
-            >
-              How We Operate
-            </motion.p>
-            <motion.h2
-              variants={fadeUp}
-              custom={1}
-              className="text-4xl text-white"
-              style={{ fontWeight: 700 }}
-            >
-              Our Values
-            </motion.h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Không gian làm việc
+            </h2>
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              Nơi ý tưởng được chia sẻ tự do và sáng tạo không giới hạn
+            </p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
-          >
-            {VALUES.map(({ icon: Icon, label, desc, color }, i) => (
+          {/* Workspace Images Masonry Grid */}
+          <div className="relative mb-16">
+            {/* Main large image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative mb-6"
+            >
+              <div className="relative overflow-hidden rounded-3xl aspect-[16/9] group">
+                <img
+                  src="/pic_company/working_place.jpg"
+                  alt="Không gian làm việc chính"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">Không gian mở</h3>
+                  <p className="text-slate-200">Sáng tạo và hợp tác hiệu quả</p>
+                </div>
+                
+                {/* Decorative elements */}
+                <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl">
+                  🏢
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Grid of smaller images */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column - Team collaboration */}
               <motion.div
-                key={label}
-                variants={fadeUp}
-                custom={i * 0.5}
-                className="p-6 rounded-2xl"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="space-y-6"
+              >
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/5] group">
+                  <img
+                    src="/pic_company/team_dev.jpg"
+                    alt="Team collaboration"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Teamwork</h4>
+                    <p className="text-sm text-slate-200">Giải quyết vấn đề cùng nhau</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-blue-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    👥
+                  </div>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl aspect-square group">
+                  <img
+                    src="/pic_company/celebration.jpg"
+                    alt="Team celebration"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Fun Moments</h4>
+                    <p className="text-sm text-slate-200">Những khoảnh khắc vui vẻ</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-amber-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    🎉
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Center column - Mentoring */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="space-y-6"
+              >
+                <div className="relative overflow-hidden rounded-2xl aspect-square group">
+                  <img
+                    src="/pic_company/mentor.jpg"
+                    alt="Mentoring session"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Learning</h4>
+                    <p className="text-sm text-slate-200">Chia sẻ kinh nghiệm</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-green-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    🎓
+                  </div>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/3] group">
+                  <img
+                    src="/pic_company/fes.jpg"
+                    alt="Company events"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Events</h4>
+                    <p className="text-sm text-slate-200">Hoạt động và sự kiện</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-purple-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    🎪
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Right column - Mixed content */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="space-y-6"
+              >
+                <div className="relative overflow-hidden rounded-2xl aspect-[3/4] group">
+                  <img
+                    src="/pic_company/tony_trieu.jpg"
+                    alt="Leadership"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Leadership</h4>
+                    <p className="text-sm text-slate-200">Dẫn dắt và định hướng</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-indigo-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    🎯
+                  </div>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/3] group">
+                  <img
+                    src="/pic_company/NHK.jpg"
+                    alt="Technical Excellence"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h4 className="font-bold mb-1">Technical</h4>
+                    <p className="text-sm text-slate-200">Chuyên môn kỹ thuật</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-cyan-500/80 backdrop-blur-sm flex items-center justify-center text-white text-sm">
+                    💻
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Floating stats */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            >
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center">
+                <div className="text-3xl font-bold text-white mb-1">50+</div>
+                <div className="text-sm text-slate-300">Ninja gia đình</div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Workspace Benefits */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {[
+              {
+                title: "Flexible Working",
+                description: "Làm việc linh hoạt, hiệu quả",
+                icon: "⚡",
+                color: "#3B82F6"
+              },
+              {
+                title: "Continuous Learning", 
+                description: "Học hỏi và phát triển không ngừng",
+                icon: "📈",
+                color: "#10B981"
+              },
+              {
+                title: "Team Spirit",
+                description: "Tinh thần đồng đội mạnh mẽ",
+                icon: "🤝",
+                color: "#F59E0B"
+              }
+            ].map((benefit, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="text-center p-6 rounded-2xl backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-300"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
-                whileHover={{
-                  borderColor: `${color}40`,
-                  y: -4,
+                  background: `linear-gradient(135deg, ${benefit.color}10, ${benefit.color}05)`,
                 }}
               >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: `${color}15` }}
-                >
-                  <Icon size={20} style={{ color }} />
-                </div>
-                <h3 className="text-white font-semibold mb-2">{label}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                <div className="text-4xl mb-4">{benefit.icon}</div>
+                <h3 className="text-xl font-bold text-white mb-3">{benefit.title}</h3>
+                <p className="text-slate-400 leading-relaxed">{benefit.description}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <motion.h2
-              variants={fadeUp}
-              custom={0}
-              className="text-3xl lg:text-4xl text-white font-bold mb-4"
-            >
-              Ready to Work Together?
-            </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              custom={1}
-              className="text-gray-400 mb-8"
-            >
-              Whether you're looking for an AI implementation partner or want to build inside our lab, we're ready.
-            </motion.p>
-            <motion.div
-              variants={fadeUp}
-              custom={2}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <Link
-                to="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
-                style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
-                  boxShadow: "0 0 30px rgba(0,212,255,0.15)",
-                }}
-              >
-                Get in Touch <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/projects"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  color: "white",
-                }}
-              >
-                See Our Work
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Live Workspace Section */}
+      <LiveWorkspaceShowcase />
     </div>
   );
 }

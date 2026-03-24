@@ -11,121 +11,113 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
+    transition: { duration: 0.6, delay: i * 0.1 },
   }),
 };
 
-const PILLARS = [
+const PILLARS = (t: any) => [
   {
     icon: Brain,
-    label: "A. Knowledge",
-    color: "#00D4FF",
-    desc: "Practical AI, automation, and system architecture knowledge — gained by doing, not sitting in lectures.",
-    points: [
-      "AI system design patterns",
-      "Automation architecture",
-      "Data pipeline fundamentals",
-      "LLM prompt engineering & deployment",
-    ],
+    label: t("lab.pillars.knowledge.label"),
+    color: "#CA8A04",
+    desc: t("lab.pillars.knowledge.desc"),
+    points: t("lab.pillars.knowledge.points"),
   },
   {
     icon: Code,
-    label: "B. Skills",
-    color: "#7B2FFF",
-    desc: "You build real products — CRM systems, AI agents, automation workflows — in actual business contexts.",
-    points: [
-      "Build and ship CRM systems",
-      "Deploy ERP modules",
-      "Create AI agents from scratch",
-      "Solve real business challenges",
-    ],
+    label: t("lab.pillars.skills.label"),
+    color: "#8B5CF6",
+    desc: t("lab.pillars.skills.desc"),
+    points: t("lab.pillars.skills.points"),
   },
   {
     icon: Users,
-    label: "C. Environment",
-    color: "#00D4FF",
-    desc: "You work inside a high-performance, execution-driven environment alongside mentors who are active operators.",
-    points: [
-      "Mentor-guided sprints",
-      "Cross-functional team collaboration",
-      "Peer code reviews and system audits",
-      "Accountability-driven culture",
-    ],
+    label: t("lab.pillars.environment.label"),
+    color: "#CA8A04",
+    desc: t("lab.pillars.environment.desc"),
+    points: t("lab.pillars.environment.points"),
   },
   {
     icon: Target,
-    label: "D. Real-World Execution",
-    color: "#7B2FFF",
-    desc: "Ninjas don't do practice problems. They participate in real client projects and deliver production systems.",
-    points: [
-      "Work on live client deployments",
-      "Contribute to shipped products",
-      "Build a portfolio with real impact",
-      "Direct exposure to business operations",
-    ],
+    label: t("lab.pillars.execution.label"),
+    color: "#8B5CF6",
+    desc: t("lab.pillars.execution.desc"),
+    points: t("lab.pillars.execution.points"),
   },
 ];
 
-const WHAT_NINJAS_DO = [
-  { icon: Zap, label: "Build real AI systems and automation workflows" },
-  { icon: Target, label: "Work on actual business problems for real clients" },
-  { icon: Users, label: "Collaborate in cross-functional builder teams" },
-  { icon: TrendingUp, label: "Deploy solutions that generate measurable ROI" },
-  { icon: Brain, label: "Work alongside experienced operators and architects" },
-  { icon: Shield, label: "Ship production-grade code and systems" },
+const WHAT_NINJAS_DO = (t: any) => [
+  { icon: Zap, label: t("lab.whatNinjasDo.build") },
+  { icon: Target, label: t("lab.whatNinjasDo.work") },
+  { icon: Users, label: t("lab.whatNinjasDo.collaborate") },
+  { icon: TrendingUp, label: t("lab.whatNinjasDo.deploy") },
+  { icon: Brain, label: t("lab.whatNinjasDo.alongside") },
+  { icon: Shield, label: t("lab.whatNinjasDo.ship") },
 ];
 
-const LAB_PROJECTS = [
+const LAB_PROJECTS = (t: any) => [
   {
-    title: "AI Procurement Agent",
+    title: t("lab.projects.procurement.title"),
     builder: "Khoa N.",
     tech: ["LangChain", "Odoo API", "Python"],
-    desc: "Autonomous agent that monitors inventory, triggers POs, and negotiates with vendors via email API.",
-    status: "Production",
-    color: "#00D4FF",
+    desc: t("lab.projects.procurement.desc"),
+    status: t("lab.projects.status.production"),
+    color: "#CA8A04",
   },
   {
-    title: "CRM Lead Scoring Engine",
+    title: t("lab.projects.leadScoring.title"),
     builder: "Phuong M.",
     tech: ["XGBoost", "CRM API", "FastAPI"],
-    desc: "ML model predicting lead conversion probability, integrated into CRM for real-time scoring.",
-    status: "Production",
-    color: "#7B2FFF",
+    desc: t("lab.projects.leadScoring.desc"),
+    status: t("lab.projects.status.production"),
+    color: "#8B5CF6",
   },
   {
-    title: "E-Commerce Analytics Dashboard",
+    title: t("lab.projects.analytics.title"),
     builder: "Long B.",
     tech: ["React", "Snowflake", "dbt"],
-    desc: "Real-time analytics platform for a D2C brand tracking 200K+ orders with AI anomaly detection.",
-    status: "Live",
-    color: "#00D4FF",
+    desc: t("lab.projects.analytics.desc"),
+    status: t("lab.projects.status.live"),
+    color: "#CA8A04",
   },
   {
-    title: "Invoice OCR & Processing Bot",
+    title: t("lab.projects.invoice.title"),
     builder: "Trang H.",
     tech: ["GPT-4V", "FastAPI", "Odoo"],
-    desc: "Reads invoices via OCR, validates data, and pushes structured records to ERP — fully automated.",
-    status: "Production",
-    color: "#7B2FFF",
+    desc: t("lab.projects.invoice.desc"),
+    status: t("lab.projects.status.production"),
+    color: "#8B5CF6",
   },
 ];
 
 export function Lab() {
+  const { t } = useLanguage();
+  
   return (
-    <div style={{ background: "#050814", minHeight: "100vh" }}>
+    <div className="aurora-bg min-h-screen">
       {/* Hero */}
       <section
         className="pt-32 pb-24 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #050814 0%, #0a0520 50%, #050814 100%)",
-        }}
       >
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src="/pic_company/mentor.jpg" 
+            alt="Mentoring Session"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{
+            background: "linear-gradient(135deg, rgba(5,8,20,0.95) 0%, rgba(10,5,32,0.88) 50%, rgba(5,8,20,0.92) 100%)"
+          }}></div>
+        </div>
+        
         <div
           className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
           style={{
@@ -154,7 +146,7 @@ export function Lab() {
               }}
             >
               <Zap size={12} />
-              Innovation Lab
+              {t("lab.hero.badge")}
             </motion.div>
             <motion.h1
               variants={fadeUp}
@@ -162,17 +154,17 @@ export function Lab() {
               className="text-5xl sm:text-6xl lg:text-7xl text-white mb-6"
               style={{ fontWeight: 700, lineHeight: 1.1 }}
             >
-              Ninja AI Lab
+              {t("lab.hero.title")}
               <span
                 style={{
                   display: "block",
-                  background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(90deg, #CA8A04, #8B5CF6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                 }}
               >
-                Where AI Builders Are Forged
+                {t("lab.hero.subtitle")}
               </span>
             </motion.h1>
             <motion.p
@@ -180,7 +172,7 @@ export function Lab() {
               custom={2}
               className="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed mb-10"
             >
-              Not a course. Not a bootcamp. The Ninja AI Lab is a real-world execution environment where individuals build and deploy AI systems that businesses actually use.
+              {t("lab.hero.description")}
             </motion.p>
             <motion.div
               variants={fadeUp}
@@ -191,11 +183,11 @@ export function Lab() {
                 to="/contact"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
                 style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(135deg, #CA8A04, #8B5CF6)",
                   boxShadow: "0 0 40px rgba(123,47,255,0.25)",
                 }}
               >
-                Apply to Join the Lab <ArrowRight size={18} />
+                {t("lab.hero.cta.primary")} <ArrowRight size={18} />
               </Link>
               <a
                 href="#what-ninjas-do"
@@ -206,7 +198,7 @@ export function Lab() {
                   color: "white",
                 }}
               >
-                Learn More
+                {t("lab.hero.cta.secondary")}
               </a>
             </motion.div>
           </motion.div>
@@ -227,9 +219,9 @@ export function Lab() {
                 variants={fadeUp}
                 custom={0}
                 className="text-xs font-semibold uppercase tracking-widest mb-4"
-                style={{ color: "#00D4FF" }}
+                style={{ color: "#CA8A04" }}
               >
-                What Is This Lab
+                {t("lab.whatIsLab.badge")}
               </motion.p>
               <motion.h2
                 variants={fadeUp}
@@ -237,17 +229,17 @@ export function Lab() {
                 className="text-4xl lg:text-5xl text-white mb-6"
                 style={{ fontWeight: 700 }}
               >
-                A Real-World
+                {t("lab.whatIsLab.title")}
                 <span
                   style={{
                     display: "block",
-                    background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                    background: "linear-gradient(90deg, #CA8A04, #8B5CF6)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
                   }}
                 >
-                  Execution Environment
+                  {t("lab.whatIsLab.subtitle")}
                 </span>
               </motion.h2>
               <motion.p
@@ -255,14 +247,14 @@ export function Lab() {
                 custom={2}
                 className="text-gray-400 text-lg leading-relaxed mb-6"
               >
-                The Ninja AI Lab is where individuals who want to build real AI systems come to work, not learn theory. You'll be embedded in projects that matter — from CRM and ERP systems to AI agents and automation workflows.
+                {t("lab.whatIsLab.description")}
               </motion.p>
               <motion.p
                 variants={fadeUp}
                 custom={3}
                 className="text-gray-500 leading-relaxed"
               >
-                Builders in the lab work alongside experienced operators, contribute to client projects, and leave with a portfolio of production systems. The lab is designed to turn motivated individuals into capable AI system builders through real execution.
+                {t("lab.whatIsLab.details")}
               </motion.p>
             </div>
             <motion.div
@@ -271,10 +263,10 @@ export function Lab() {
               className="grid grid-cols-2 gap-4"
             >
               {[
-                { value: "100%", label: "Real Projects" },
-                { value: "Live", label: "Production Systems" },
-                { value: "Expert", label: "Mentors & Operators" },
-                { value: "Proven", label: "Builder Outcomes" },
+                { value: t("lab.whatIsLab.stats.realProjects.value"), label: t("lab.whatIsLab.stats.realProjects.label") },
+                { value: t("lab.whatIsLab.stats.production.value"), label: t("lab.whatIsLab.stats.production.label") },
+                { value: t("lab.whatIsLab.stats.mentors.value"), label: t("lab.whatIsLab.stats.mentors.label") },
+                { value: t("lab.whatIsLab.stats.outcomes.value"), label: t("lab.whatIsLab.stats.outcomes.label") },
               ].map(({ value, label }) => (
                 <div
                   key={label}
@@ -287,7 +279,7 @@ export function Lab() {
                   <div
                     className="text-3xl font-bold mb-2"
                     style={{
-                      background: "linear-gradient(90deg, #00D4FF, #7B2FFF)",
+                      background: "linear-gradient(90deg, #CA8A04, #8B5CF6)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -322,9 +314,9 @@ export function Lab() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#7B2FFF" }}
+              style={{ color: "#8B5CF6" }}
             >
-              The Work
+              {t("lab.whatNinjasDo.badge")}
             </motion.p>
             <motion.h2
               variants={fadeUp}
@@ -332,7 +324,7 @@ export function Lab() {
               className="text-4xl lg:text-5xl text-white"
               style={{ fontWeight: 700 }}
             >
-              What Ninjas Do
+              {t("lab.whatNinjasDo.title")}
             </motion.h2>
           </motion.div>
 
@@ -342,7 +334,7 @@ export function Lab() {
             viewport={{ once: true, margin: "-60px" }}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
-            {WHAT_NINJAS_DO.map(({ icon: Icon, label }, i) => (
+            {WHAT_NINJAS_DO(t).map(({ icon: Icon, label }, i) => (
               <motion.div
                 key={label}
                 variants={fadeUp}
@@ -357,7 +349,7 @@ export function Lab() {
                   className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: "rgba(0,212,255,0.1)" }}
                 >
-                  <Icon size={20} style={{ color: "#00D4FF" }} />
+                  <Icon size={20} style={{ color: "#CA8A04" }} />
                 </div>
                 <p className="text-gray-300 mt-2">{label}</p>
               </motion.div>
@@ -367,7 +359,7 @@ export function Lab() {
       </section>
 
       {/* 4 Pillars */}
-      <section className="py-20" style={{ background: "#050814" }}>
+      <section className="py-20 aurora-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -379,9 +371,9 @@ export function Lab() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#00D4FF" }}
+              style={{ color: "#CA8A04" }}
             >
-              What You Gain
+              {t("lab.pillars.badge")}
             </motion.p>
             <motion.h2
               variants={fadeUp}
@@ -389,12 +381,12 @@ export function Lab() {
               className="text-4xl lg:text-5xl text-white"
               style={{ fontWeight: 700 }}
             >
-              The 4 Pillars of Value
+              {t("lab.pillars.title")}
             </motion.h2>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 gap-6">
-            {PILLARS.map(({ icon: Icon, label, color, desc, points }, i) => (
+            {PILLARS(t).map(({ icon: Icon, label, color, desc, points }, i) => (
               <motion.div
                 key={label}
                 initial="hidden"
@@ -423,7 +415,7 @@ export function Lab() {
                 </div>
                 <p className="text-gray-400 leading-relaxed mb-5">{desc}</p>
                 <div className="flex flex-col gap-2.5">
-                  {points.map((p) => (
+                  {points.map((p: string) => (
                     <div key={p} className="flex items-start gap-2">
                       <CheckCircle2 size={14} className="mt-0.5 flex-shrink-0" style={{ color }} />
                       <span className="text-gray-300 text-sm">{p}</span>
@@ -454,9 +446,9 @@ export function Lab() {
               variants={fadeUp}
               custom={0}
               className="text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{ color: "#7B2FFF" }}
+              style={{ color: "#8B5CF6" }}
             >
-              Lab Outputs
+              {t("lab.projects.badge")}
             </motion.p>
             <motion.h2
               variants={fadeUp}
@@ -464,12 +456,12 @@ export function Lab() {
               className="text-4xl text-white"
               style={{ fontWeight: 700 }}
             >
-              Systems Built by Ninjas
+              {t("lab.projects.title")}
             </motion.h2>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {LAB_PROJECTS.map(({ title, builder, tech, desc, status, color }, i) => (
+            {LAB_PROJECTS(t).map(({ title, builder, tech, desc, status, color }, i) => (
               <motion.div
                 key={title}
                 initial="hidden"
@@ -495,7 +487,7 @@ export function Lab() {
                   >
                     {status}
                   </span>
-                  <span className="text-gray-600 text-xs">by {builder}</span>
+                  <span className="text-gray-600 text-xs">{t("lab.projects.by")} {builder}</span>
                 </div>
                 <h3 className="text-white font-semibold mb-2 text-sm">{title}</h3>
                 <p className="text-gray-500 text-xs leading-relaxed mb-4">{desc}</p>
@@ -521,7 +513,7 @@ export function Lab() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 relative overflow-hidden" style={{ background: "#050814" }}>
+      <section className="py-20 relative overflow-hidden aurora-bg">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -539,14 +531,14 @@ export function Lab() {
               custom={0}
               className="text-4xl lg:text-5xl text-white font-bold mb-4"
             >
-              Ready to Become a Ninja?
+              {t("lab.cta.title")}
             </motion.h2>
             <motion.p
               variants={fadeUp}
               custom={1}
               className="text-gray-400 text-lg mb-10"
             >
-              Apply to join the lab. Work on real systems. Build real things. Create real impact.
+              {t("lab.cta.description")}
             </motion.p>
             <motion.div
               variants={fadeUp}
@@ -557,11 +549,11 @@ export function Lab() {
                 to="/contact"
                 className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105"
                 style={{
-                  background: "linear-gradient(135deg, #00D4FF, #7B2FFF)",
+                  background: "linear-gradient(135deg, #CA8A04, #8B5CF6)",
                   boxShadow: "0 0 40px rgba(123,47,255,0.2)",
                 }}
               >
-                Apply to Join the Lab <ArrowRight size={18} />
+                {t("lab.cta.primary")} <ArrowRight size={18} />
               </Link>
               <Link
                 to="/people"
@@ -572,7 +564,7 @@ export function Lab() {
                   color: "white",
                 }}
               >
-                Meet the Builders <Users size={18} />
+                {t("lab.cta.secondary")} <Users size={18} />
               </Link>
             </motion.div>
           </motion.div>
