@@ -102,11 +102,10 @@ export function About() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <ImageWithFallback
+          <img
             src="/pic_company/working_place.jpg"
             alt="Ninja AI Workspace"
             className="w-full h-full object-cover"
-            fallbackSrc="/pic_company/fes.jpg"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/85 to-slate-900/90" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
