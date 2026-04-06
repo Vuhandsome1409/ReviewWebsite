@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Upload, Send, User, Mail, Phone, Briefcase, FileText, Link as LinkIcon } from "lucide-react";
+import { supabase, getSupabaseConfigIssue } from "../utils/supabase";
 
 interface LabApplicationModalProps {
   isOpen: boolean;
@@ -12,36 +13,228 @@ export function LabApplicationModal({ isOpen, onClose }: LabApplicationModalProp
     name: "",
     email: "",
     phone: "",
+    position: "AI Engineer",
     portfolio: "",
     experience: "",
     reason: "",
   });
   const [fileName, setFileName] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const toReadableSupabaseError = (error: unknown, context: "upload" | "insert", bucket?: string, table?: string) => {
+    const getRawMessage = () => {
+      if (error instanceof Error) {
+        return error.message;
+      }
+
+      if (typeof error === "string") {
+        return error;
+      }
+
+      if (typeof error === "object" && error !== null) {
+        const maybeMessage = "message" in error ? String((error as { message?: unknown }).message || "") : "";
+        const maybeError = "error" in error ? String((error as { error?: unknown }).error || "") : "";
+        const maybeStatus = "statusCode" in error ? String((error as { statusCode?: unknown }).statusCode || "") : "";
+
+        return [maybeStatus, maybeMessage || maybeError].filter(Boolean).join(" - ");
+      }
+
+      return "";
+    };
+
+    const rawMessage = getRawMessage();
+    const raw = rawMessage.toLowerCase();
+
+    if (context === "insert") {
+      if (raw.includes("relation") && raw.includes("does not exist")) {
+        return `Bang ${table || "lab_applications"} chua ton tai trong Supabase Database.`;
+      }
+
+      if (raw.includes("row-level security") || raw.includes("permission") || raw.includes("403")) {
+        return `Bang ${table || "lab_applications"} chua co policy cho phep INSERT.`;
+      }
+
+      if (raw.includes("column") && raw.includes("does not exist")) {
+        return `Cau truc bang ${table || "lab_applications"} chua khop voi du lieu form.`;
+      }
+    }
+
+    if (raw.includes("bucket not found") || raw.includes("not found") || raw.includes("404")) {
+      return `Bucket ${bucket || "lab-applications"} chua ton tai tren Supabase Storage.`;
+    }
+
+    if (raw.includes("row-level security") || raw.includes("not allowed") || raw.includes("unauthorized") || raw.includes("permission") || raw.includes("403")) {
+      return `Bucket ${bucket || "lab-applications"} chua co policy cho phep upload (INSERT).`;
+    }
+
+    if (raw.includes("invalid api key") || raw.includes("jwt") || raw.includes("apikey") || raw.includes("401")) {
+      return "Supabase key khong hop le. Vui long kiem tra VITE_SUPABASE_ANON_KEY.";
+    }
+
+    if (raw.includes("failed to fetch") || raw.includes("network") || raw.includes("cors")) {
+      return "Khong ket noi duoc Supabase. Vui long kiem tra mang va VITE_SUPABASE_URL.";
+    }
+
+    if (raw.includes("invalid key")) {
+      return "Ten file chua ky tu khong hop le voi Supabase Storage. He thong se tu dong dung ban khong dau.";
+    }
+
+    if (rawMessage) {
+      return `Upload that bai: ${rawMessage}`;
+    }
+
+    return "Upload that bai. Vui long thu lai.";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError("");
+
+    if (!resumeFile) {
+      setSubmitError("Vui long tai CV truoc khi gui.");
+      return;
+    }
+
+    const configIssue = getSupabaseConfigIssue();
+    if (configIssue || !supabase) {
+      setSubmitError(configIssue || "Supabase chua duoc cau hinh.");
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setIsSuccess(false);
-      onClose();
-      setFormData({ name: "", email: "", phone: "", portfolio: "", experience: "", reason: "" });
-      setFileName("");
-    }, 3000);
+
+    try {
+      const bucket = import.meta.env.VITE_SUPABASE_LAB_BUCKET || "lab-applications";
+      const table = import.meta.env.VITE_SUPABASE_LAB_TABLE || "lab_applications";
+      const cleanPart = (value: string, fallback: string) => {
+        const normalized = (value || fallback)
+          .trim()
+          .replace(/\s+/g, " ")
+          .replace(/[\\/:*?"<>|]/g, "")
+          .trim();
+
+        return normalized || fallback;
+      };
+
+      const displayName = cleanPart(formData.name, "Ung vien");
+      const displayPosition = cleanPart(formData.position, "Vi tri");
+      const toAsciiKey = (value: string) =>
+        value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/đ/g, "d")
+          .replace(/Đ/g, "D")
+          .replace(/[^a-zA-Z0-9 ._-]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      const fileExt = resumeFile.name.split(".").pop() || "pdf";
+      const baseFileName = `${displayName} - ${displayPosition}`;
+      const asciiBaseFileName = toAsciiKey(baseFileName) || "Ung vien - Vi tri";
+      let filePath = `applications/${baseFileName}.${fileExt}`;
+
+      let { error } = await supabase.storage.from(bucket).upload(filePath, resumeFile, {
+        upsert: false,
+        contentType: resumeFile.type || undefined,
+      });
+
+      if (error) {
+        const raw = (error.message || "").toLowerCase();
+        const isInvalidKey = raw.includes("invalid key") || raw.includes("400");
+        const isDuplicate = raw.includes("already exists") || raw.includes("duplicate") || raw.includes("409");
+
+        if (isInvalidKey) {
+          filePath = `applications/${asciiBaseFileName}.${fileExt}`;
+          const retryInvalidKey = await supabase.storage.from(bucket).upload(filePath, resumeFile, {
+            upsert: false,
+            contentType: resumeFile.type || undefined,
+          });
+          error = retryInvalidKey.error;
+        }
+
+        if (error) {
+          const retryRaw = (error.message || "").toLowerCase();
+          const retryDuplicate = isDuplicate || retryRaw.includes("already exists") || retryRaw.includes("duplicate") || retryRaw.includes("409");
+
+          if (retryDuplicate) {
+            const fallbackBase = filePath.includes(`/${asciiBaseFileName}.`) ? asciiBaseFileName : baseFileName;
+            filePath = `applications/${fallbackBase} - ${Date.now()}.${fileExt}`;
+            const retryDuplicateUpload = await supabase.storage.from(bucket).upload(filePath, resumeFile, {
+              upsert: false,
+              contentType: resumeFile.type || undefined,
+            });
+            error = retryDuplicateUpload.error;
+          }
+        }
+      }
+
+      if (error) {
+        throw error;
+      }
+
+      const { error: insertError } = await supabase.from(table).insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        position: formData.position,
+        portfolio: formData.portfolio || null,
+        experience: formData.experience,
+        reason: formData.reason,
+        resume_file_name: filePath.split("/").pop() || resumeFile.name,
+        resume_file_path: filePath,
+        resume_bucket: bucket,
+      });
+
+      if (insertError) {
+        await supabase.storage.from(bucket).remove([filePath]);
+        throw insertError;
+      }
+
+      setIsSuccess(true);
+
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+        onClose();
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          position: "AI Engineer",
+          portfolio: "",
+          experience: "",
+          reason: "",
+        });
+        setFileName("");
+        setResumeFile(null);
+      }, 3000);
+    } catch (error) {
+      const bucket = import.meta.env.VITE_SUPABASE_LAB_BUCKET || "lab-applications";
+      const table = import.meta.env.VITE_SUPABASE_LAB_TABLE || "lab_applications";
+      console.error("Supabase upload error:", error);
+      const dbMessage = toReadableSupabaseError(error, "insert", bucket, table);
+      const uploadMessage = toReadableSupabaseError(error, "upload", bucket, table);
+      const finalMessage = dbMessage.startsWith("Upload that bai") ? uploadMessage : dbMessage;
+      setSubmitError(finalMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setSubmitError("File vuot qua 10MB. Vui long chon file nho hon.");
+        setResumeFile(null);
+        setFileName("");
+        return;
+      }
+
+      setSubmitError("");
+      setResumeFile(file);
       setFileName(file.name);
     }
   };
@@ -107,7 +300,7 @@ export function LabApplicationModal({ isOpen, onClose }: LabApplicationModalProp
                         WebkitTextFillColor: "transparent",
                       }}
                     >
-                      Ứng tuyển Lab
+                      Ứng tuyển ninja AI
                     </h2>
                     <p className="text-base" style={{ color: "#94A3B8" }}>
                       Tham gia môi trường thực thi thực tế, xây dựng hệ thống AI cùng các experts
@@ -177,6 +370,32 @@ export function LabApplicationModal({ isOpen, onClose }: LabApplicationModalProp
                           placeholder="0912345678"
                         />
                       </div>
+                    </div>
+
+                    {/* Position */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: "#E2E8F0" }}>
+                        <Briefcase size={16} className="inline mr-2" />
+                        Vị trí ứng tuyển *
+                      </label>
+                      <select
+                        required
+                        value={formData.position}
+                        onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl outline-none transition-all duration-300"
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "#E2E8F0",
+                        }}
+                      >
+                        <option value="AI Engineer" style={{ color: "#0F172A" }}>AI Engineer</option>
+                        <option value="AI Developer" style={{ color: "#0F172A" }}>AI Developer</option>
+                        <option value="ML Engineer" style={{ color: "#0F172A" }}>ML Engineer</option>
+                        <option value="Data Engineer" style={{ color: "#0F172A" }}>Data Engineer</option>
+                        <option value="Fullstack Engineer" style={{ color: "#0F172A" }}>Fullstack Engineer</option>
+                        <option value="Backend Engineer" style={{ color: "#0F172A" }}>Backend Engineer</option>
+                      </select>
                     </div>
 
                     {/* Portfolio/LinkedIn */}
@@ -263,9 +482,16 @@ export function LabApplicationModal({ isOpen, onClose }: LabApplicationModalProp
                           accept=".pdf,.doc,.docx"
                           onChange={handleFileChange}
                           className="hidden"
+                          required
                         />
                       </label>
                     </div>
+
+                    {submitError && (
+                      <p className="text-sm" style={{ color: "#FCA5A5" }}>
+                        {submitError}
+                      </p>
+                    )}
 
                     {/* Submit Button */}
                     <button
@@ -281,7 +507,7 @@ export function LabApplicationModal({ isOpen, onClose }: LabApplicationModalProp
                       {isSubmitting ? (
                         <>
                           <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                          Đang gửi...
+                          Dang tai CV len...
                         </>
                       ) : (
                         <>

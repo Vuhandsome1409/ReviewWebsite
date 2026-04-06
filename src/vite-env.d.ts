@@ -5,7 +5,10 @@ interface ImportMetaEnv {
   readonly BASE_URL: string
   readonly PROD: boolean
   readonly DEV: boolean
-  // more env variables...
+  readonly VITE_SUPABASE_URL: string
+  readonly VITE_SUPABASE_ANON_KEY: string
+  readonly VITE_SUPABASE_LAB_BUCKET?: string
+  readonly VITE_SUPABASE_LAB_TABLE?: string
 }
 
 interface ImportMeta {
